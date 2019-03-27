@@ -3,7 +3,9 @@ package com.udacity.sandwichclub;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -15,19 +17,38 @@ public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
 
+    private TextView mAlsoKnownTv;
+    private TextView mAlsoKnownLabel;
+    private TextView mOriginTv;
+    private TextView mOriginLabel;
+    private TextView mDescriptionTv;
+    private TextView mIngredientTv;
+    private ImageView ingredientsIv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        ImageView ingredientsIv = findViewById(R.id.image_iv);
+        ingredientsIv = findViewById(R.id.image_iv);
+        mAlsoKnownTv = findViewById(R.id.also_known_tv);
+        mAlsoKnownLabel = findViewById(R.id.alsoKnownAs_label);
+        mOriginTv = findViewById(R.id.origin_tv);
+        mOriginLabel = findViewById(R.id.placeOfOrigin_label);
+        mDescriptionTv = findViewById(R.id.description_tv);
+        mIngredientTv = findViewById(R.id.ingredients_tv);
+
+        //ImageView ingredientsIv = findViewById(R.id.image_iv);
 
         Intent intent = getIntent();
         if (intent == null) {
             closeOnError();
         }
 
-        int position = intent.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION);
+        int position = 0;
+        if (intent != null) {
+            position = intent.getIntExtra(EXTRA_POSITION, DEFAULT_POSITION);
+        }
         if (position == DEFAULT_POSITION) {
             // EXTRA_POSITION not found in intent
             closeOnError();
@@ -43,7 +64,7 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        populateUI();
+        populateUI(sandwich);
         Picasso.with(this)
                 .load(sandwich.getImage())
                 .into(ingredientsIv);
@@ -56,7 +77,40 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-    private void populateUI() {
+    private void populateUI(Sandwich sandwich) {
 
+
+        if (sandwich.getAlsoKnownAs() != null && sandwich.getAlsoKnownAs().size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < sandwich.getAlsoKnownAs().size(); i++) {
+                stringBuilder.append(" - ");
+                stringBuilder.append(sandwich.getAlsoKnownAs().get(i));
+            }
+            mAlsoKnownTv.setText(stringBuilder.toString());
+        } else {
+            mAlsoKnownTv.setVisibility(View.INVISIBLE);
+            mAlsoKnownLabel.setVisibility(View.INVISIBLE);
+        }
+
+        if (sandwich.getPlaceOfOrigin().isEmpty()) {
+            mOriginTv.setVisibility(View.INVISIBLE);
+            mOriginLabel.setVisibility(View.INVISIBLE);
+        } else {
+            mOriginTv.setText(sandwich.getPlaceOfOrigin());
+        }
+
+        mDescriptionTv.setText(sandwich.getDescription());
+
+
+        if (sandwich.getIngredients() != null && sandwich.getIngredients().size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < sandwich.getIngredients().size(); i++) {
+                stringBuilder.append("\u2023 ");
+                stringBuilder.append(sandwich.getIngredients().get(i));
+                stringBuilder.append("\n");
+            }
+            mIngredientTv.setText(stringBuilder.toString());
+        }
     }
-}
+    }
+
