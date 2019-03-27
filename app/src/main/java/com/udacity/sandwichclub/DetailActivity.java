@@ -23,14 +23,13 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mOriginLabel;
     private TextView mDescriptionTv;
     private TextView mIngredientTv;
-    private ImageView ingredientsIv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        ingredientsIv = findViewById(R.id.image_iv);
+        ImageView ingredientsIv = this.<ImageView>findViewById(R.id.image_iv);
         mAlsoKnownTv = findViewById(R.id.also_known_tv);
         mAlsoKnownLabel = findViewById(R.id.alsoKnownAs_label);
         mOriginTv = findViewById(R.id.origin_tv);
@@ -78,38 +77,28 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void populateUI(Sandwich sandwich) {
-
-
-        if (sandwich.getAlsoKnownAs() != null && sandwich.getAlsoKnownAs().size() > 0) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < sandwich.getAlsoKnownAs().size(); i++) {
-                stringBuilder.append(" - ");
-                stringBuilder.append(sandwich.getAlsoKnownAs().get(i));
+        if (sandwich.getAlsoKnownAs() != null ) {
+            for (String knownAs : sandwich.getAlsoKnownAs()) {
+                mAlsoKnownTv.append("\u21A0 " + (knownAs));
             }
-            mAlsoKnownTv.setText(stringBuilder.toString());
         } else {
             mAlsoKnownTv.setVisibility(View.INVISIBLE);
             mAlsoKnownLabel.setVisibility(View.INVISIBLE);
         }
 
-        if (sandwich.getPlaceOfOrigin().isEmpty()) {
+        if (!sandwich.getPlaceOfOrigin().isEmpty()) {
+            mOriginTv.setText(sandwich.getPlaceOfOrigin());
+        } else {
             mOriginTv.setVisibility(View.INVISIBLE);
             mOriginLabel.setVisibility(View.INVISIBLE);
-        } else {
-            mOriginTv.setText(sandwich.getPlaceOfOrigin());
         }
 
         mDescriptionTv.setText(sandwich.getDescription());
 
-
-        if (sandwich.getIngredients() != null && sandwich.getIngredients().size() > 0) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < sandwich.getIngredients().size(); i++) {
-                stringBuilder.append("\u2023 ");
-                stringBuilder.append(sandwich.getIngredients().get(i));
-                stringBuilder.append("\n");
+        if (sandwich.getIngredients() != null ) {
+            for (String ingredient : sandwich.getIngredients()) {
+                mIngredientTv.append("\u2023 " + (ingredient) + "\n");
             }
-            mIngredientTv.setText(stringBuilder.toString());
         }
     }
     }
